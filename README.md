@@ -5,6 +5,9 @@
 
  - `make up` on root folder run it will start test-task docker
    container with all requied dependencies.
+  - `make stop` stops all containers
+  - `make rm` stops and removes containers
+  - `make logs` displays logs
   - `make bash` to open container bash window
   - `localhost:3333` to access go container from localhost
 
