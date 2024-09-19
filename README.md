@@ -3,9 +3,9 @@
 
 - To start, please install: docker, docker-compose and go
 
- - `'make up'` on root folder run it will start test-task docker
+ - `make up` on root folder run it will start test-task docker
    container with all requied dependencies.
-  - `'make bash'` to open container bash window
+  - `make bash` to open container bash window
   - `localhost:3333` to access go container from localhost
 
 
