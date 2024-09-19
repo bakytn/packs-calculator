@@ -1,0 +1,5 @@
+FROM golang:1.23
+
+RUN mkdir -p /go/src/repartners
+
+WORKDIR /go/src/repartners
