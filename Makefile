@@ -19,4 +19,4 @@ stop:
 	docker-compose stop
 
 bash:
-	docker-compose exec test-task bash
+	docker-compose exec packs-calculator bash
