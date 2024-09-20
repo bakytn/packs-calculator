@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var defaultPackSizes = []int{250, 500, 1000, 2000, 5000}
+
 type Packs []int
 
 func (p Packs) Len() int           { return len(p) }
@@ -43,15 +45,12 @@ func ParsePackSizes(packs string) ([]int, error) {
 }
 
 // CalculatePacks calculates the packs needed to fulfill the order
-func CalculatePacks(order int, packs []int) map[int]int {
+func CalculatePacks(order int) map[int]int {
 	if order <= 0 {
 		return map[int]int{}
 	}
 
-	// Sort pack sizes in ascending order
-	sort.Ints(packs)
-
-	maxPackSize := packs[len(packs)-1]
+	maxPackSize := defaultPackSizes[len(defaultPackSizes)-1]
 	maxTotalItems := order + maxPackSize
 
 	// Initialize a map to store the best combination for each total number of items
@@ -64,7 +63,7 @@ func CalculatePacks(order int, packs []int) map[int]int {
 
 	// Build combinations
 	for totalItems := 1; totalItems <= maxTotalItems; totalItems++ {
-		for _, packSize := range packs {
+		for _, packSize := range defaultPackSizes {
 			if packSize > totalItems {
 				break
 			}
@@ -107,14 +106,14 @@ func CalculatePacks(order int, packs []int) map[int]int {
 	}
 
 	// If no combination found, select the smallest pack size larger than order
-	for _, packSize := range packs {
+	for _, packSize := range defaultPackSizes {
 		if packSize >= order {
 			return map[int]int{packSize: 1}
 		}
 	}
 
 	// As a last resort, return the largest pack size
-	return map[int]int{packs[len(packs)-1]: 1}
+	return map[int]int{defaultPackSizes[len(defaultPackSizes)-1]: 1}
 }
 
 // isBetterCombination determines if comb1 is better than comb2
