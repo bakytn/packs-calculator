@@ -10,12 +10,6 @@ var defaultPackSizes = []int{250, 500, 1000, 2000, 5000}
 // cheap safe guard because CalculatePacks may be slow as this time
 const MaxOrders = 10_000_000
 
-// type Packs []int
-
-// func (p Packs) Len() int           { return len(p) }
-// func (p Packs) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-// func (p Packs) Less(i, j int) bool { return p[i] < p[j] }
-
 // PackCount represents the count of each pack size to send
 type PackCount struct {
 	PackSize int `json:"pack_size"`
