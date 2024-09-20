@@ -50,6 +50,11 @@ func TestCalculatePacks(t *testing.T) {
 				250:  1,
 			},
 		},
+		{
+			name:           "Invalid",
+			itemsOrdered:   0,
+			expectedResult: map[int]int{},
+		},
 	}
 
 	for _, tt := range tests {
@@ -57,7 +62,6 @@ func TestCalculatePacks(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := CalculatePacks(tt.itemsOrdered)
 
-			// Compare the results
 			if !reflect.DeepEqual(result, tt.expectedResult) {
 				t.Errorf("CalculatePacks(%d) = %v; want %v",
 					tt.itemsOrdered, result, tt.expectedResult)

@@ -1,12 +1,5 @@
 package packs
 
-import (
-	"fmt"
-	"sort"
-	"strconv"
-	"strings"
-)
-
 var defaultPackSizes = []int{250, 500, 1000, 2000, 5000}
 
 type Packs []int
@@ -26,22 +19,6 @@ type Combination struct {
 	TotalItems int
 	TotalPacks int
 	PackCounts map[int]int
-}
-
-// ParsePackSizes parses the comma-separated pack sizes string into a sorted slice of integers
-func ParsePackSizes(packs string) ([]int, error) {
-	packStrs := strings.Split(packs, ",")
-	packInts := make([]int, len(packStrs))
-	for i, s := range packStrs {
-		packSize, err := strconv.Atoi(strings.TrimSpace(s))
-		if err != nil || packSize <= 0 {
-			return nil, fmt.Errorf("invalid pack size '%s'", s)
-		}
-		packInts[i] = packSize
-	}
-	// Sort the pack sizes in ascending order
-	sort.Ints(packInts)
-	return packInts, nil
 }
 
 // CalculatePacks calculates the packs needed to fulfill the order
