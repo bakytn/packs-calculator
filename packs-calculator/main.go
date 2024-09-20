@@ -11,8 +11,7 @@ import (
 
 // Request represents the JSON structure for incoming requests
 type Request struct {
-	ItemsOrdered int    `json:"items_ordered"`
-	PackSizes    string `json:"pack_sizes,omitempty"` // Optional: comma-separated pack sizes
+	ItemsOrdered int `json:"items_ordered"`
 }
 
 // Response represents the JSON structure for responses
@@ -42,21 +41,8 @@ func calculatePacksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Default pack sizes
-	packSizesStr := req.PackSizes
-	if packSizesStr == "" {
-		packSizesStr = "250,500,1000,2000,5000"
-	}
-
-	// Parse pack sizes
-	packSizesList, err := packs.ParsePackSizes(packSizesStr)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing pack sizes: %v", err), http.StatusBadRequest)
-		return
-	}
-
 	// Calculate the required packs
-	result := packs.CalculatePacks(req.ItemsOrdered, packSizesList)
+	result := packs.CalculatePacks(req.ItemsOrdered)
 
 	// Prepare the response
 	var packsToSend []packs.PackCount
