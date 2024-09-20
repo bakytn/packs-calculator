@@ -1,12 +1,20 @@
 package packs
 
+import (
+	"errors"
+	"fmt"
+)
+
 var defaultPackSizes = []int{250, 500, 1000, 2000, 5000}
 
-type Packs []int
+// cheap safe guard because CalculatePacks may be slow as this time
+const MaxOrders = 10_000_000
 
-func (p Packs) Len() int           { return len(p) }
-func (p Packs) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p Packs) Less(i, j int) bool { return p[i] < p[j] }
+// type Packs []int
+
+// func (p Packs) Len() int           { return len(p) }
+// func (p Packs) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+// func (p Packs) Less(i, j int) bool { return p[i] < p[j] }
 
 // PackCount represents the count of each pack size to send
 type PackCount struct {
@@ -22,9 +30,13 @@ type Combination struct {
 }
 
 // CalculatePacks calculates the packs needed to fulfill the order
-func CalculatePacks(order int) map[int]int {
+func CalculatePacks(order int) (map[int]int, error) {
 	if order <= 0 {
-		return map[int]int{}
+		return nil, errors.New("invalid number of order, empty given")
+	}
+
+	if order > MaxOrders {
+		return nil, fmt.Errorf("invalid number of order, orders cannot exceed %d", MaxOrders)
 	}
 
 	maxPackSize := defaultPackSizes[len(defaultPackSizes)-1]
@@ -79,18 +91,18 @@ func CalculatePacks(order int) map[int]int {
 	}
 
 	if bestComb != nil {
-		return bestComb.PackCounts
+		return bestComb.PackCounts, nil
 	}
 
 	// If no combination found, select the smallest pack size larger than order
 	for _, packSize := range defaultPackSizes {
 		if packSize >= order {
-			return map[int]int{packSize: 1}
+			return map[int]int{packSize: 1}, nil
 		}
 	}
 
 	// As a last resort, return the largest pack size
-	return map[int]int{defaultPackSizes[len(defaultPackSizes)-1]: 1}
+	return map[int]int{defaultPackSizes[len(defaultPackSizes)-1]: 1}, nil
 }
 
 // isBetterCombination determines if comb1 is better than comb2

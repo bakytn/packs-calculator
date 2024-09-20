@@ -42,7 +42,11 @@ func calculatePacksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Calculate the required packs
-	result := packs.CalculatePacks(req.ItemsOrdered)
+	result, err := packs.CalculatePacks(req.ItemsOrdered)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %s", err), http.StatusBadRequest)
+		return
+	}
 
 	// Prepare the response
 	var packsToSend []packs.PackCount
