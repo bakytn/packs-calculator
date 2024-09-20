@@ -20,5 +20,3 @@
 ### Custom Pack Sizes
 `curl -X POST -H "Content-Type: application/json" -d '{"items_ordered": 750}' http://localhost:3333/calculate-packs`
 
-### Invalid Pack Sizes
-`curl -X POST -H "Content-Type: application/json" -d '{"items_ordered": 100}' http://localhost:3333/calculate-packs`
