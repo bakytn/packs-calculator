@@ -19,7 +19,6 @@ func TestCalculatePacks(t *testing.T) {
 			expectedResult: map[int]int{
 				250: 1,
 			},
-			errorExpected: false,
 		},
 		{
 			name:         "Order 250",
@@ -27,7 +26,6 @@ func TestCalculatePacks(t *testing.T) {
 			expectedResult: map[int]int{
 				250: 1,
 			},
-			errorExpected: false,
 		},
 		{
 			name:         "Order 251",
@@ -35,7 +33,6 @@ func TestCalculatePacks(t *testing.T) {
 			expectedResult: map[int]int{
 				500: 1,
 			},
-			errorExpected: false,
 		},
 		{
 			name:         "Order 501",
@@ -44,7 +41,6 @@ func TestCalculatePacks(t *testing.T) {
 				500: 1,
 				250: 1,
 			},
-			errorExpected: false,
 		},
 		{
 			name:         "Order 12001",
@@ -54,13 +50,11 @@ func TestCalculatePacks(t *testing.T) {
 				2000: 1,
 				250:  1,
 			},
-			errorExpected: false,
 		},
 		{
 			name:           "Invalid",
 			itemsOrdered:   0,
 			expectedResult: nil,
-			errorExpected:  true,
 		},
 		{
 			name:         "Ten million orders",
@@ -68,26 +62,29 @@ func TestCalculatePacks(t *testing.T) {
 			expectedResult: map[int]int{
 				5000: 2000,
 			},
-			errorExpected: false,
 		},
 		{
-			name:           "More than 10 million orders",
-			itemsOrdered:   10000001,
-			expectedResult: nil,
-			errorExpected:  true,
+			name:         "More than 10 million orders",
+			itemsOrdered: 10000001,
+			expectedResult: map[int]int{
+				5000: 2000,
+				250:  1,
+			},
+		},
+		{
+			name:         "10000011 million orders",
+			itemsOrdered: 10000012,
+			expectedResult: map[int]int{
+				10000011: 1,
+				250:      1,
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := CalculatePacks(tt.itemsOrdered)
-
-			if tt.errorExpected {
-				if err == nil {
-					t.Error("Error expected")
-				}
-			}
+			result := CalculatePacks(tt.itemsOrdered, []int{10000011, 5000, 2000, 1000, 500, 250})
 
 			if !reflect.DeepEqual(result, tt.expectedResult) {
 				t.Errorf("CalculatePacks(%d) = %v; want %v",
