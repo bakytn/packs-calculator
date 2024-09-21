@@ -10,45 +10,45 @@ func TestCalculatePacks(t *testing.T) {
 	tests := []struct {
 		name           string
 		itemsOrdered   int
-		expectedResult map[int]int
+		expectedResult []PackCount
 		errorExpected  bool
 	}{
 		{
 			name:         "Order 1",
 			itemsOrdered: 1,
-			expectedResult: map[int]int{
-				250: 1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
 			},
 		},
 		{
 			name:         "Order 250",
 			itemsOrdered: 250,
-			expectedResult: map[int]int{
-				250: 1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
 			},
 		},
 		{
 			name:         "Order 251",
 			itemsOrdered: 251,
-			expectedResult: map[int]int{
-				500: 1,
+			expectedResult: []PackCount{
+				{PackSize: 500, Count: 1},
 			},
 		},
 		{
 			name:         "Order 501",
 			itemsOrdered: 501,
-			expectedResult: map[int]int{
-				500: 1,
-				250: 1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
+				{PackSize: 500, Count: 1},
 			},
 		},
 		{
 			name:         "Order 12001",
 			itemsOrdered: 12001,
-			expectedResult: map[int]int{
-				5000: 2,
-				2000: 1,
-				250:  1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
+				{PackSize: 2000, Count: 1},
+				{PackSize: 5000, Count: 2},
 			},
 		},
 		{
@@ -59,24 +59,24 @@ func TestCalculatePacks(t *testing.T) {
 		{
 			name:         "Ten million orders",
 			itemsOrdered: 10000000,
-			expectedResult: map[int]int{
-				5000: 2000,
+			expectedResult: []PackCount{
+				{PackSize: 5000, Count: 2000},
 			},
 		},
 		{
 			name:         "More than 10 million orders",
 			itemsOrdered: 10000001,
-			expectedResult: map[int]int{
-				5000: 2000,
-				250:  1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
+				{PackSize: 5000, Count: 2000},
 			},
 		},
 		{
 			name:         "10000011 million orders",
 			itemsOrdered: 10000012,
-			expectedResult: map[int]int{
-				10000011: 1,
-				250:      1,
+			expectedResult: []PackCount{
+				{PackSize: 250, Count: 1},
+				{PackSize: 10000011, Count: 1},
 			},
 		},
 	}

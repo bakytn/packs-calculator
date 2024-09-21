@@ -20,14 +20,26 @@ type PackCount struct {
 	Count    int `json:"count"`
 }
 
-// Define a struct to store combination details
-type Combination struct {
-	TotalItems int
-	TotalPacks int
-	PackCounts map[int]int
+func CalculatePacks(order int, packSizes []int) []PackCount {
+	if order == 0 {
+		return nil
+	}
+
+	packCounts := getPacks(order, packSizes)
+
+	var packsToSend []PackCount
+	for packSize, count := range packCounts {
+		packsToSend = append(packsToSend, PackCount{PackSize: packSize, Count: count})
+	}
+
+	sort.Slice(packsToSend, func(i, j int) bool {
+		return packsToSend[i].PackSize < packsToSend[j].PackSize
+	})
+
+	return packsToSend
 }
 
-func CalculatePacks(order int, packSizes []int) map[int]int {
+func getPacks(order int, packSizes []int) map[int]int {
 	if packSizes == nil {
 		return nil
 	}
@@ -67,7 +79,7 @@ func CalculatePacks(order int, packSizes []int) map[int]int {
 		if packs > 0 && remainingOrder > remainder && remainingOrder > 0 {
 			result[pack] += packs
 
-			r := CalculatePacks(remainder, packSizes[i+1:])
+			r := getPacks(remainder, packSizes[i+1:])
 			mergePacks(r, result)
 
 			return result
