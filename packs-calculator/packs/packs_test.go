@@ -14,6 +14,18 @@ func TestCalculatePacks(t *testing.T) {
 		packSizes      []int
 	}{
 		{
+			name:           "Empty pack sizes",
+			itemsOrdered:   1,
+			expectedResult: nil,
+			packSizes:      []int{},
+		},
+		{
+			name:           "Nil pack sizes",
+			itemsOrdered:   1,
+			expectedResult: nil,
+			packSizes:      nil,
+		},
+		{
 			name:         "Order 1",
 			itemsOrdered: 1,
 			expectedResult: []PackCount{
