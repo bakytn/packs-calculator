@@ -7,10 +7,6 @@ import (
 var defaultPackSizes = []int{5000, 2000, 1000, 500, 250}
 
 func WithDefaultPackSizes() []int {
-	sort.Slice(defaultPackSizes, func(i, j int) bool {
-		return defaultPackSizes[i] > defaultPackSizes[j]
-	})
-
 	return defaultPackSizes
 }
 
