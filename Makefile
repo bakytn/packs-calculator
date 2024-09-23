@@ -17,6 +17,7 @@ start:
 	docker-compose start
 stop:
 	docker-compose stop
-
 bash:
 	docker-compose exec packs-calculator bash
+tests:
+	docker-compose exec packs-calculator go test ./...
