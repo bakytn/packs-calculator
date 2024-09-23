@@ -9,6 +9,7 @@
   - `make rm` stops and removes containers
   - `make logs` displays logs
   - `make bash` to open container bash window
+  - `make tests` run all available go tests
   - `localhost:3333` to access go container from localhost
 
 
