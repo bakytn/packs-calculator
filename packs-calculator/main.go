@@ -39,8 +39,6 @@ func calculatePacksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	packsToSend := packs.CalculatePacks(req.ItemsOrdered, packs.WithDefaultPackSizes())
-
 	response := Response{
 		ItemsOrdered: req.ItemsOrdered,
 		PacksToSend:  packsToSend,

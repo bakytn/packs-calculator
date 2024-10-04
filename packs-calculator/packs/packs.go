@@ -46,6 +46,7 @@ func getPacks(order int, packSizes []int) map[int]int {
 
 	result := make(map[int]int)
 
+
 	remainingOrder := order
 	for i, pack := range packSizes {
 		packs := remainingOrder / pack

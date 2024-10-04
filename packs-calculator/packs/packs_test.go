@@ -28,6 +28,7 @@ func TestCalculatePacks(t *testing.T) {
 		{
 			name:         "Order 1",
 			itemsOrdered: 1,
+
 			expectedResult: []PackCount{
 				{PackSize: 250, Count: 1},
 			},
@@ -36,6 +37,7 @@ func TestCalculatePacks(t *testing.T) {
 		{
 			name:         "Order 250 default sizes",
 			itemsOrdered: 250,
+
 			expectedResult: []PackCount{
 				{PackSize: 250, Count: 1},
 			},
@@ -105,7 +107,7 @@ func TestCalculatePacks(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			result := CalculatePacks(tt.itemsOrdered, tt.packSizes)
+			result := CalculatePacks(tt.itemsOrdered)
 
 			if !reflect.DeepEqual(result, tt.expectedResult) {
 				t.Errorf("CalculatePacks(%d) = %v; want %v",
