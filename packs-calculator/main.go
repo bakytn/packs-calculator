@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"repartners/packs-calculator/packs"
-	"sort"
 )
 
 // Request represents the JSON structure for incoming requests
@@ -33,7 +32,6 @@ func calculatePacksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse the JSON request
 	var req Request
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil || req.ItemsOrdered <= 0 {
@@ -41,26 +39,11 @@ func calculatePacksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Calculate the required packs
-	result := packs.CalculatePacks(req.ItemsOrdered)
-
-	// Prepare the response
-	var packsToSend []packs.PackCount
-	for packSize, count := range result {
-		packsToSend = append(packsToSend, packs.PackCount{PackSize: packSize, Count: count})
-	}
-
-	// Sort the response for consistency
-	sort.Slice(packsToSend, func(i, j int) bool {
-		return packsToSend[i].PackSize < packsToSend[j].PackSize
-	})
-
 	response := Response{
 		ItemsOrdered: req.ItemsOrdered,
 		PacksToSend:  packsToSend,
 	}
 
-	// Send the JSON response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }

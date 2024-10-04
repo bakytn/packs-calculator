@@ -1,19 +1,14 @@
 package packs
 
 import (
-	"fmt"
 	"sort"
-	"strconv"
-	"strings"
 )
 
-var defaultPackSizes = []int{250, 500, 1000, 2000, 5000}
+var defaultPackSizes = []int{5000, 2000, 1000, 500, 250}
 
-type Packs []int
-
-func (p Packs) Len() int           { return len(p) }
-func (p Packs) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p Packs) Less(i, j int) bool { return p[i] < p[j] }
+func WithDefaultPackSizes() []int {
+	return defaultPackSizes
+}
 
 // PackCount represents the count of each pack size to send
 type PackCount struct {
@@ -21,119 +16,84 @@ type PackCount struct {
 	Count    int `json:"count"`
 }
 
-// Define a struct to store combination details
-type Combination struct {
-	TotalItems int
-	TotalPacks int
-	PackCounts map[int]int
+func CalculatePacks(order int, packSizes []int) []PackCount {
+	if order == 0 {
+		return nil
+	}
+
+	packCounts := getPacks(order, packSizes)
+
+	var packsToSend []PackCount
+	for packSize, count := range packCounts {
+		packsToSend = append(packsToSend, PackCount{PackSize: packSize, Count: count})
+	}
+
+	sort.Slice(packsToSend, func(i, j int) bool {
+		return packsToSend[i].PackSize < packsToSend[j].PackSize
+	})
+
+	return packsToSend
 }
 
-// ParsePackSizes parses the comma-separated pack sizes string into a sorted slice of integers
-func ParsePackSizes(packs string) ([]int, error) {
-	packStrs := strings.Split(packs, ",")
-	packInts := make([]int, len(packStrs))
-	for i, s := range packStrs {
-		packSize, err := strconv.Atoi(strings.TrimSpace(s))
-		if err != nil || packSize <= 0 {
-			return nil, fmt.Errorf("invalid pack size '%s'", s)
-		}
-		packInts[i] = packSize
-	}
-	// Sort the pack sizes in ascending order
-	sort.Ints(packInts)
-	return packInts, nil
-}
-
-// CalculatePacks calculates the packs needed to fulfill the order
-func CalculatePacks(order int) map[int]int {
-	if order <= 0 {
-		return map[int]int{}
+func getPacks(order int, packSizes []int) map[int]int {
+	if packSizes == nil {
+		return nil
 	}
 
-	maxPackSize := defaultPackSizes[len(defaultPackSizes)-1]
-	maxTotalItems := order + maxPackSize
-
-	// Initialize a map to store the best combination for each total number of items
-	combinations := make(map[int]*Combination)
-	combinations[0] = &Combination{
-		TotalItems: 0,
-		TotalPacks: 0,
-		PackCounts: make(map[int]int),
+	if order == 0 {
+		return nil
 	}
 
-	// Build combinations
-	for totalItems := 1; totalItems <= maxTotalItems; totalItems++ {
-		for _, packSize := range defaultPackSizes {
-			if packSize > totalItems {
-				break
+	result := make(map[int]int)
+
+
+	remainingOrder := order
+	for i, pack := range packSizes {
+		packs := remainingOrder / pack
+		remainder := remainingOrder % pack
+
+		if packs < 1 && remainder == remainingOrder {
+			if i+1 == len(packSizes) {
+				result[pack] += 1
+
+				return result
 			}
-			remaining := totalItems - packSize
-			if prevComb, exists := combinations[remaining]; exists {
-				// Build new combination
-				newPackCounts := make(map[int]int)
-				for k, v := range prevComb.PackCounts {
-					newPackCounts[k] = v
-				}
-				newPackCounts[packSize]++
 
-				newComb := &Combination{
-					TotalItems: totalItems,
-					TotalPacks: prevComb.TotalPacks + 1,
-					PackCounts: newPackCounts,
-				}
+			nextPack := packSizes[i+1]
 
-				// Check if this combination is better
-				existingComb, exists := combinations[totalItems]
-				if !exists || isBetterCombination(newComb, existingComb) {
-					combinations[totalItems] = newComb
+			if remainder > nextPack {
+				if i+2 == len(packSizes) {
+					// we assign current pack
+					result[pack] += 1
+
+					return result
 				}
 			}
+
+			continue
+		}
+
+		if packs > 0 && remainingOrder > remainder && remainingOrder > 0 {
+			result[pack] += packs
+
+			r := getPacks(remainder, packSizes[i+1:])
+			mergePacks(r, result)
+
+			return result
+		}
+
+		if packs > 0 && remainder == 0 {
+			result[pack] += 1
+
+			return result
 		}
 	}
 
-	// Find the best combination starting from the order quantity
-	var bestComb *Combination
-	for totalItems := order; totalItems <= maxTotalItems; totalItems++ {
-		if comb, exists := combinations[totalItems]; exists {
-			if bestComb == nil || isBetterCombination(comb, bestComb) {
-				bestComb = comb
-			}
-		}
-	}
-
-	if bestComb != nil {
-		return bestComb.PackCounts
-	}
-
-	// If no combination found, select the smallest pack size larger than order
-	for _, packSize := range defaultPackSizes {
-		if packSize >= order {
-			return map[int]int{packSize: 1}
-		}
-	}
-
-	// As a last resort, return the largest pack size
-	return map[int]int{defaultPackSizes[len(defaultPackSizes)-1]: 1}
+	return result
 }
 
-// isBetterCombination determines if comb1 is better than comb2
-func isBetterCombination(comb1, comb2 *Combination) bool {
-	if comb1.TotalItems < comb2.TotalItems {
-		return true
+func mergePacks(src map[int]int, dst map[int]int) {
+	for k, v := range src {
+		dst[k] += v
 	}
-	if comb1.TotalItems == comb2.TotalItems && comb1.TotalPacks < comb2.TotalPacks {
-		return true
-	}
-	return false
-}
-
-// max returns the maximum value among the provided integers
-func max(nums ...int) int {
-	maxVal := nums[0]
-	for _, n := range nums {
-		if n > maxVal {
-			maxVal = n
-		}
-	}
-	return maxVal
 }
