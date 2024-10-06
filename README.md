@@ -26,7 +26,7 @@
 }
 ```
 
-### Order 750 Itemm
+### Order 750 Items
 `curl -X POST -H "Content-Type: application/json" -d '{"items_ordered": 750}' http://localhost:3333/calculate-packs`
 ```json
 {
