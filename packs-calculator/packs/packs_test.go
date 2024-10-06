@@ -69,7 +69,7 @@ func TestCalculatePacks(t *testing.T) {
 			packSizes: []int{10000011, 5000, 2000, 1000, 500, 250},
 		},
 		{
-			name:           "Invalid",
+			name:           "Zero items ordered",
 			itemsOrdered:   0,
 			expectedResult: nil,
 			packSizes:      []int{10000011, 5000, 2000, 1000, 500, 250},
